@@ -3,7 +3,7 @@ This is Node.js Express with REST API for Sorting Students into four different h
 
 ## Prerequisites
 - Node.js and npm
-- Postman and port:3000
+- Postman at port:3000
 
 ## API Endpoints
 - GET `/knockknock` Returns a message and status to confirm that API is working

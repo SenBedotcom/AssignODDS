@@ -1,17 +1,12 @@
 import express, { Router } from 'express';
-import bodyParser from 'body-parser';
-import { PrismaClient } from '@prisma/client';
-import { StudentService } from '../service/StudentService';
-import { StudentRepository } from '../repository/StudentRepository';
+import DIContainer from 'src/di';
 
-import SortingHatController from '../controller/SortingHatController';
-
-import { validationMiddleware, greetingHatSchema } from '../middleware/validation';
-
-const sortingHatController = new SortingHatController(new StudentService(new StudentRepository(new PrismaClient())));
+import { validationMiddleware, sortingHatSchema } from '../middleware/validation';
 
 const router: Router = express.Router();
 
-router.post('/sort', sortingHatController.sortStudents);
+const sortingHatController = DIContainer.sortingHatController;
+
+router.post('/sort', validationMiddleware(sortingHatSchema), sortingHatController.sortStudents.bind(sortingHatController));
 
 export default router;

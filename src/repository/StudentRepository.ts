@@ -1,9 +1,16 @@
+import { injectable, inject } from 'tsyringe';
 import { PrismaClient } from '@prisma/client';
-import { Student } from '../model/Student';
-import { IStudentRepository, StudentFilter } from './IStudentRepository';
+import { Student } from '@model/Student';
+import { IStudentRepository } from 'src/interface/IStudentRepository';
+import CreateStudentError from '@error/CreateStudentError';
+import { empty } from '@prisma/client/runtime';
 
+@injectable()
 export class StudentRepository implements IStudentRepository {
-  constructor (private readonly prisma: PrismaClient) {}
+  constructor (
+    @inject('PrismaClient')
+    private readonly prisma: PrismaClient
+  ) {}
 
   async getStudent (studentId: string): Promise<Student | undefined | null> {
     return await this.prisma.student.findUnique({
@@ -13,16 +20,8 @@ export class StudentRepository implements IStudentRepository {
     });
   }
 
-  async getStudents (studentFilter: StudentFilter): Promise<Student[]> {
-    return await this.prisma.student.findMany({
-      where: {
-        AND: [
-          { id: { in: studentFilter.id } },
-          { name: { in: studentFilter.name } },
-          { house: { equals: studentFilter.house } }
-        ]
-      }
-    });
+  async getStudents (): Promise<Student[]> {
+    return await this.prisma.student.findMany();
   }
 
   async createStudent (student: Student): Promise<Student | null> {
@@ -36,13 +35,17 @@ export class StudentRepository implements IStudentRepository {
 
   async createStudents (students: Student[]): Promise<Student[]> {
     const createdStudents: Student[] = [];
-
-    students.map(async (student) => {
+    
+    try{
+      for (const student of students) {
       const createdStudent = await this.prisma.student.create({ data: student });
       createdStudents.push(createdStudent);
-    });
-
+    }
     return createdStudents;
+    } catch (error){
+      throw new CreateStudentError();
+    }
+    
   }
 
   async updateStudent (studentId: string, student: Student): Promise<Student> {
@@ -63,5 +66,10 @@ export class StudentRepository implements IStudentRepository {
         id: studentId
       }
     });
+  }
+
+  async deleteAllStudent (): Promise<number> {
+    const deleteResult =  await this.prisma.student.deleteMany({})
+    return deleteResult.count
   }
 }

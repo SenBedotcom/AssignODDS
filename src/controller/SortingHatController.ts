@@ -1,30 +1,34 @@
+import { singleton, inject } from 'tsyringe';
 import { Request, Response } from 'express';
-import { IStudentService } from '../service/IStudentService';
+import { IStudentService } from 'src/interface/IStudentService';
+import { ISortingHatController } from 'src/interface/ISortingHatControler';
+import SortingHatError from '@error/SortingHatError';
 
-class SortingHatController {
-  private studentService: IStudentService;
-
-  constructor (studentService: IStudentService) {
-    this.studentService = studentService;
-  }
+@singleton()
+class SortingHatController implements ISortingHatController {
+  constructor (
+    @inject('StudentService')
+    private readonly studentService: IStudentService
+  ) {}
 
   async sortStudents (req: Request, res: Response): Promise<void> {
-    const { studentAmount, students } =  req.body;
+    const { studentAmount, students } = req.body;
 
     try {
-      const sortedStudents = await this.studentService.sort(students);
+      if (students.length > studentAmount || students.length < studentAmount) {
+        throw new SortingHatError();
+      }
+
+      const sortedStudents = await this.studentService.sortStudents(students);
 
       res.status(200).json({
-        studentAmount: studentAmount,
-        gryffindor: sortedStudents['gryffindor'],
-        hufflepuff: sortedStudents['hufflepuff'],
-        ravenclaw: sortedStudents['ravenclaw'],
-        slytherin: sortedStudents['slytherin']
+        studentAmount,
+        students: sortedStudents
       });
 
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Failed to sort students due to issues arose during the sorting ceremony'});
+    } catch (error: any) {
+      console.error(error.message);
+      res.status(500).json({ error: error.message });
     }
   }
 }

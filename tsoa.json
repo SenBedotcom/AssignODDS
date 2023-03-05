@@ -1,0 +1,11 @@
+{
+  "spec": {
+    "outFile": "./swagger.json",
+    "specVersion": 3
+  },
+  "routes": {
+    "basePath": "/api",
+    "entryFile": "./src/app.ts"
+  },
+  "outputDirectory": "./swagger"
+}

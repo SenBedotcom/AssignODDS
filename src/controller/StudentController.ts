@@ -27,6 +27,15 @@ class StudentController implements IStudentController {
       res.status(500).json({ error });
     }
   }
+
+  async deleteAllStudent (req: Request, res: Response): Promise<void> {
+    try {
+      const deleteResult = await this.studentService.deleteAllStudent();
+      res.status(200).json(deleteResult);
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  }
 }
 
 export default StudentController;

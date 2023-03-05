@@ -4,5 +4,5 @@ export interface IStudentService {
   getStudent (studentId: string): Promise<Student | undefined | null>;
   getStudents (): Promise<Student[]>;
   sortStudents (students: Student[]): Promise<Student[]>;
-  deleteStudentsData(): Promise<number>;
+  deleteAllStudent(): Promise<number>;
 }

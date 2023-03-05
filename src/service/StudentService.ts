@@ -34,7 +34,7 @@ export class StudentService implements IStudentService {
       createdStudents
     };
   }
-  async deleteStudentsData (){
+  async deleteAllStudent(){
     return this.studentRepository.deleteAllStudent()
   }
 }

@@ -7,5 +7,6 @@ const studentController = DIContainer.studentController;
 
 router.get('/', studentController.getStudents.bind(studentController));
 router.get('/:studentId', studentController.getStudent.bind(studentController));
+router.delete('/delete', studentController.deleteAllStudent.bind(studentController));
 
 export default router;
